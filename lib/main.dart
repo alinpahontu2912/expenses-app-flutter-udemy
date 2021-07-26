@@ -20,10 +20,31 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Second App Demo'),
+        title: Text('Second App Demo', textAlign: TextAlign.center),
+        centerTitle: true,
       ),
-      body: Center(
-        child: Text('Something not empty'),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly ,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Card(
+            child: Container(
+              child: Text(
+                'CHART Placeholder',
+                textAlign: TextAlign.center,
+              ),
+              width: double.infinity,
+            ),
+            elevation: 5,
+            color: Colors.brown,
+          ),
+          Container(
+            child: Card(
+              color: Colors.redAccent,
+              child: Text('Transaction List'),
+            ),
+          ),
+        ],
       ),
     );
   }
