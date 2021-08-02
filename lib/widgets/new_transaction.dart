@@ -56,8 +56,23 @@ class _NewTransactionState extends State<NewTransaction> {
                 labelText: 'Enter price of purchase',
               ),
             ),
-            FlatButton(
-                textColor: Colors.purple,
+            Container(
+              height: 50,
+              child: Row(
+                children: [
+                  Text('No date chosen!'),
+                  RaisedButton(
+                      textColor: Theme.of(context).primaryColor,
+                      onPressed: () {},
+                      child: Text('Choose Date!', style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),))
+                ],
+              ),
+            ),
+            RaisedButton(
+              color: Theme.of(context).buttonColor,
+                textColor: Theme.of(context).primaryColor,
                 onPressed: () => submitData,
                 child: Text('Add transaction'))
           ],
