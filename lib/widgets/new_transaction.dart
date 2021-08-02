@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
@@ -10,21 +11,45 @@ class NewTransaction extends StatefulWidget {
 }
 
 class _NewTransactionState extends State<NewTransaction> {
-  final titleController = TextEditingController();
+  final _titleController = TextEditingController();
 
-  final amountController = TextEditingController();
+  final _amountController = TextEditingController();
 
-  void submitData() {
-    final enteredTitle = titleController.text;
-    final enteredAmount = double.parse(amountController.text);
+  DateTime _selectedDate = DateTime(1990);
 
-    if (enteredTitle.isEmpty || enteredAmount <= 0) {
+  void _submitData() {
+    if (_amountController.text.isEmpty) {
       return;
     }
 
-    widget.addTx(enteredTitle, enteredAmount);
+    final enteredTitle = _titleController.text;
+    final enteredAmount = double.parse(_amountController.text);
+
+    if (enteredTitle.isEmpty ||
+        enteredAmount <= 0 ||
+        _selectedDate == DateTime(1990)) {
+      return;
+    }
+
+    widget.addTx(enteredTitle, enteredAmount, _selectedDate);
 
     Navigator.of(context).pop();
+  }
+
+  void _presentDatePicker() {
+    showDatePicker(
+            context: context,
+            initialDate: DateTime.now(),
+            firstDate: DateTime(2021),
+            lastDate: DateTime.now())
+        .then((pickedDate) {
+      if (pickedDate == DateTime(1990)) {
+        return;
+      }
+      setState(() {
+        _selectedDate = pickedDate!;
+      });
+    });
   }
 
   @override
@@ -39,19 +64,19 @@ class _NewTransactionState extends State<NewTransaction> {
           children: [
             TextField(
               autocorrect: true,
-              controller: titleController,
+              controller: _titleController,
               cursorColor: Theme.of(context).primaryColor,
-              onSubmitted: (_) => submitData(),
+              onSubmitted: (_) => _submitData(),
               decoration: InputDecoration(
                 labelText: 'Enter title of purchase',
               ),
             ),
             TextField(
               autocorrect: true,
-              controller: amountController,
+              controller: _amountController,
               cursorColor: Colors.indigo,
               keyboardType: TextInputType.number,
-              onSubmitted: (_) => submitData(),
+              onSubmitted: (_) => _submitData(),
               decoration: InputDecoration(
                 labelText: 'Enter price of purchase',
               ),
@@ -59,21 +84,29 @@ class _NewTransactionState extends State<NewTransaction> {
             Container(
               height: 50,
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text('No date chosen!'),
+                  Expanded(
+                    child: Text(_selectedDate == DateTime(1990)
+                        ? 'No date chosen!'
+                        : DateFormat.yMd().format(_selectedDate).toString()),
+                  ),
                   RaisedButton(
                       textColor: Theme.of(context).primaryColor,
-                      onPressed: () {},
-                      child: Text('Choose Date!', style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),))
+                      onPressed: _presentDatePicker,
+                      child: Text(
+                        'Choose Date!',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ))
                 ],
               ),
             ),
             RaisedButton(
-              color: Theme.of(context).buttonColor,
+                color: Theme.of(context).buttonColor,
                 textColor: Theme.of(context).primaryColor,
-                onPressed: () => submitData,
+                onPressed: () => _submitData,
                 child: Text('Add transaction'))
           ],
         ),
