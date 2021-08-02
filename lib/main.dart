@@ -40,10 +40,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _userTransactions = [
-    // Transaction(id: '01', title: 'dummy', amount: 12.43, date: DateTime.now()),
-    // Transaction(id: '02', title: 'test', amount: 14.01, date: DateTime.now()),
-  ];
+  final List<Transaction> _userTransactions = [];
 
   List<Transaction> get _recentTracsanctions {
     return _userTransactions.where((element) {
@@ -103,11 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
           TransactionList(_userTransactions, _deleteTransaction),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => {print('hello')},
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
     );
   }
 }
