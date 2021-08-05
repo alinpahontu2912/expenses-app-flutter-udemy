@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:secondapp/widgets/Chart.dart';
 import 'package:secondapp/widgets/new_transaction.dart';
 import 'package:secondapp/widgets/transaction_list.dart';
@@ -7,9 +6,9 @@ import 'package:secondapp/widgets/transaction_list.dart';
 import 'models/transaction.dart';
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations(
+  //     [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
@@ -45,6 +44,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransactions = [];
 
+  bool _showChart = false;
+
   List<Transaction> get _recentTracsanctions {
     return _userTransactions.where((element) {
       return element.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
@@ -79,6 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     final appBar = AppBar(
       title: Text(
         'Personal Expenses',
@@ -91,25 +94,56 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
     );
+
+    final txListWidget = Container(
+        height: (MediaQuery.of(context).size.height -
+            appBar.preferredSize.height -
+            MediaQuery.of(context).padding.top) *
+            0.8,
+        child:
+        TransactionList(_userTransactions, _deleteTransaction));
+
+
     return Scaffold(
       appBar: appBar,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-              height: (MediaQuery.of(context).size.height -
-                      appBar.preferredSize.height -
-                      MediaQuery.of(context).padding.top) *
-                  0.2,
-              child: Chart(_recentTracsanctions)),
-          Container(
-              height: (MediaQuery.of(context).size.height -
-                      appBar.preferredSize.height -
-                      MediaQuery.of(context).padding.top) *
-                  0.8,
-              child: TransactionList(_userTransactions, _deleteTransaction)),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            if (isLandscape)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Show Chart?'),
+                Switch(
+                    value: _showChart,
+                    onChanged: (tapped) {
+                      //_showChart ? _showChart = false : _showChart = true;
+                      setState(() {
+                        _showChart = tapped;
+                      });
+                    }),
+              ],
+            ),
+            if (!isLandscape)
+            Container(
+                    height: (MediaQuery.of(context).size.height -
+                            appBar.preferredSize.height -
+                            MediaQuery.of(context).padding.top) *
+                        0.3,
+                    child: Chart(_recentTracsanctions)),
+            if (!isLandscape) txListWidget,
+            if (isLandscape) _showChart ?
+            Container(
+                height: (MediaQuery.of(context).size.height -
+                    appBar.preferredSize.height -
+                    MediaQuery.of(context).padding.top) *
+                    0.8,
+                child: Chart(_recentTracsanctions))
+            : txListWidget,
+          ],
+        ),
       ),
     );
   }
