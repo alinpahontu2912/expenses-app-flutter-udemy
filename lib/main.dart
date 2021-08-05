@@ -80,7 +80,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final mediaQuery = MediaQuery.of(context);
+
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
 
     final appBar = AppBar(
       title: Text(
@@ -96,53 +98,55 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     final txListWidget = Container(
-        height: (MediaQuery.of(context).size.height -
-            appBar.preferredSize.height -
-            MediaQuery.of(context).padding.top) *
+        height: (mediaQuery.size.height -
+                appBar.preferredSize.height -
+                mediaQuery.padding.top) *
             0.8,
-        child:
-        TransactionList(_userTransactions, _deleteTransaction));
-
+        child: TransactionList(_userTransactions, _deleteTransaction));
 
     return Scaffold(
       appBar: appBar,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            if (isLandscape)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Show Chart?'),
-                Switch(
-                    value: _showChart,
-                    onChanged: (tapped) {
-                      //_showChart ? _showChart = false : _showChart = true;
-                      setState(() {
-                        _showChart = tapped;
-                      });
-                    }),
-              ],
-            ),
-            if (!isLandscape)
-            Container(
-                    height: (MediaQuery.of(context).size.height -
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (isLandscape)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Show Chart?'),
+                    Switch.adaptive(
+                        value: _showChart,
+                        onChanged: (tapped) {
+                          //_showChart ? _showChart = false : _showChart = true;
+                          setState(() {
+                            _showChart = tapped;
+                          });
+                        }),
+                  ],
+                ),
+              if (!isLandscape)
+                Container(
+                    height: (mediaQuery.size.height -
                             appBar.preferredSize.height -
-                            MediaQuery.of(context).padding.top) *
+                            mediaQuery.padding.top) *
                         0.3,
                     child: Chart(_recentTracsanctions)),
-            if (!isLandscape) txListWidget,
-            if (isLandscape) _showChart ?
-            Container(
-                height: (MediaQuery.of(context).size.height -
-                    appBar.preferredSize.height -
-                    MediaQuery.of(context).padding.top) *
-                    0.8,
-                child: Chart(_recentTracsanctions))
-            : txListWidget,
-          ],
+              if (!isLandscape) txListWidget,
+              if (isLandscape)
+                _showChart
+                    ? Container(
+                        height: (mediaQuery.size.height -
+                                appBar.preferredSize.height -
+                                mediaQuery.padding.top) *
+                            0.8,
+                        child: Chart(_recentTracsanctions))
+                    : txListWidget,
+            ],
+          ),
         ),
       ),
     );

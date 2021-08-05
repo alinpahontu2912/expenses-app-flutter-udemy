@@ -20,10 +20,12 @@ class TransactionList extends StatelessWidget {
                   height: 20,
                 ),
                 Container(
-                    height: 200,
-                    child: Image.asset(
-                      'assets/images/waiting.png',
-                      fit: BoxFit.cover,
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    child: FittedBox(
+                      child: Image.asset(
+                        'assets/images/waiting.png',
+                        fit: BoxFit.cover,
+                      ),
                     )),
               ],
             );
@@ -48,11 +50,18 @@ class TransactionList extends StatelessWidget {
                   ),
                   subtitle:
                       Text(DateFormat.yMMMd().format(transactions[index].date)),
-                  trailing: IconButton(
-                    icon: Icon(Icons.delete),
-                    color: Theme.of(context).errorColor,
-                    onPressed: () => deleteTrans(transactions[index].id),
-                  ),
+                  trailing: MediaQuery.of(context).size.width > 350
+                      ? FlatButton.icon(
+                          onPressed: () => deleteTrans(transactions[index].id),
+                          label: Text('Delete'),
+                          icon: Icon(Icons.delete),
+                          color: Theme.of(context).errorColor,
+                        )
+                      : IconButton(
+                          icon: Icon(Icons.delete),
+                          color: Theme.of(context).errorColor,
+                          onPressed: () => deleteTrans(transactions[index].id),
+                        ),
                 ),
               );
             },
