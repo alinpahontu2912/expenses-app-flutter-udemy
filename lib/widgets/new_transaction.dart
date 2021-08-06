@@ -7,13 +7,23 @@ class NewTransaction extends StatefulWidget {
   NewTransaction(this.addTx);
 
   @override
-  _NewTransactionState createState() => _NewTransactionState();
+  _NewTransactionState createState() {
+    print('something');
+    return _NewTransactionState();}
+
 }
+
 
 class _NewTransactionState extends State<NewTransaction> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
   DateTime _selectedDate = DateTime(1990);
+
+  @override
+  void initState(){
+    print('initState');
+    super.initState();
+  }
 
   void _submitData() {
     if (_amountController.text.isEmpty) {
@@ -26,7 +36,7 @@ class _NewTransactionState extends State<NewTransaction> {
         enteredAmount <= 0 ||
         _selectedDate == DateTime(1990)) {
       return;
-    }
+     }
 
     widget.addTx(
       enteredTitle,

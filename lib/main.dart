@@ -41,10 +41,27 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   final List<Transaction> _userTransactions = [];
 
   bool _showChart = false;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance!.addObserver(this);
+    super.initState();
+  }
+
+  @override
+   void didChangeAppLifeCycleState(AppLifecycleState appLifecycleState) {
+    print('something happened');
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
 
   List<Transaction> get _recentTracsanctions {
     return _userTransactions.where((element) {
@@ -68,6 +85,37 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _userTransactions.removeWhere((element) => element.id == id);
     });
+  }
+
+  Widget _buildLandscapeContent() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text('Show Chart?'),
+        Switch.adaptive(
+            value: _showChart,
+            onChanged: (tapped) {
+              //_showChart ? _showChart = false : _showChart = true;
+              setState(() {
+                _showChart = tapped;
+              });
+            }),
+      ],
+    );
+  }
+
+  List<Widget> _buildPortraitContent(
+      MediaQueryData mediaQuery, AppBar appBar, Widget widget) {
+    return [
+      Container(
+          height: (mediaQuery.size.height -
+                  appBar.preferredSize.height -
+                  mediaQuery.padding.top) *
+              0.3,
+          child: Chart(_recentTracsanctions)),
+      widget
+    ];
   }
 
   void _startAddNewTransaction(BuildContext context) {
@@ -112,30 +160,9 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              if (isLandscape)
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Show Chart?'),
-                    Switch.adaptive(
-                        value: _showChart,
-                        onChanged: (tapped) {
-                          //_showChart ? _showChart = false : _showChart = true;
-                          setState(() {
-                            _showChart = tapped;
-                          });
-                        }),
-                  ],
-                ),
+              if (isLandscape) _buildLandscapeContent(),
               if (!isLandscape)
-                Container(
-                    height: (mediaQuery.size.height -
-                            appBar.preferredSize.height -
-                            mediaQuery.padding.top) *
-                        0.3,
-                    child: Chart(_recentTracsanctions)),
-              if (!isLandscape) txListWidget,
+                ..._buildPortraitContent(mediaQuery, appBar, txListWidget),
               if (isLandscape)
                 _showChart
                     ? Container(
